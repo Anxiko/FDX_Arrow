@@ -57,6 +57,32 @@ namespace fdx{ namespace arrow
         return ((s1.get_pos_center()-s2.get_pos_center()).sq_mod())<(dist*dist);//If the distance between centers is less than the size, the shapes are in contact
     }
 
+    //Get the minimum absolute value of a set
+    Vct::Mod min_abs_set (Vct::Mod min_set, Vct::Mod max_set)
+    {
+        //If 0 is on the set, it will always be the minimum
+        if (min_set<=0&&0<=max_set)//0 is on the set, return it
+            return 0;
+        else//0 is not in the set, the min abs value is one of the extremes
+            return min_set>0?min_set:-max_set;
+    }
+
+    //Get the minimum distance between rectangle and a circle
+    Vct mindist_rct_crl(const Rct &r, const Crl &c)
+    {
+        //Get the distance between the shapes
+        Vct d(r.get_pos_corner()-c.get_pos_center());
+
+        //Get the minium distance between vector between the shapes
+        return Vct(arrow::min_abs_set(d.x,d.x+r.get_diagonal().x),arrow::min_abs_set(d.y,d.y+r.get_diagonal().y));
+    }
+
+    //Contact between a rectangle and a circle
+    bool contact_rct_crl (const Rct &r, const Crl &c)
+    {
+        return mindist_rct_crl(r,c).sq_mod()<=c.get_size()*c.get_size();
+    }
+
     /*TTH*/
 
     //Time from the first shape to hit the second at the given speed
@@ -326,6 +352,12 @@ namespace fdx{ namespace arrow
     bool Crl::contact (const Pnt &p) const
     {
         return arrow::contact_crl_pnt(*this,p);
+    }
+
+    //Contact with a rectangle
+    bool Crl::contact (const Rct &r) const
+    {
+        return arrow::contact_rct_crl(r,*this);
     }
 
     /*Time to hit*/
