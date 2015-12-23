@@ -157,32 +157,32 @@ namespace fdx{ namespace arrow
     }
 
     //Time to hit of a rectangle to a circle at the given speed
-    Vct::Mod tth_crl_rct (const Shp& s1, const Shp& s2, const Vct& speed)
+    Vct::Mod tth_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
     {
         //If they are alredy in contact, the TTH is 0
-        if (s1.contact(s2))
+        if (c.contact(r))
             return 0;
 
         //Get the initial position of the Crl using the Rct as reference
         int px,py;//Relative X and Y positions (-1,0,1)
 
         //X
-        if (s1.get_pos_center().x<s2.get_pos_center().x)
+        if (c.get_pos_center().x<r.get_pos_center().x)
             px=-1;//Left
         else
         {
-            if (s1.get_pos_center().x<=(s2.get_pos_center().x+s2.get_diagonal().x))
+            if (c.get_pos_center().x<=(r.get_pos_center().x+r.get_diagonal().x))
                 px=0;//Center
             else
                 px=1;//Right
         }
 
         //Y
-        if (s1.get_pos_center().y<s2.get_pos_center().y)
+        if (c.get_pos_center().y<r.get_pos_center().y)
             py=-1;//Up
         else
         {
-            if (s1.get_pos_center().y<=(s2.get_pos_center().y+s2.get_diagonal().y))
+            if (c.get_pos_center().y<=(r.get_pos_center().y+r.get_diagonal().y))
                 py=0;//Center
             else
                 py=1;//Down
@@ -194,7 +194,7 @@ namespace fdx{ namespace arrow
         Vct::Mod tth,tte,t=0;
 
         //Make a copy of the circle
-        Crl c(s1.get_pos_center(),s1.get_size());
+        Crl ccopy(c);
 
         //Loop through the areas
         while(true)
@@ -205,17 +205,17 @@ namespace fdx{ namespace arrow
             if (px&&py)
             {
                 //Get the corner of the rect
-                Vct r(s2.get_pos_corner());
-                if (px>0)r.x+=s2.get_diagonal().x;
-                if (py>0)r.y+=s2.get_diagonal().y;
+                Vct r(r.get_pos_corner());
+                if (px>0)r.x+=r.get_diagonal().x;
+                if (py>0)r.y+=r.get_diagonal().y;
 
                 //Get the tth
-                tth=c.mov_against(Pnt(r),speed);
+                tth=ccopy.mov_against(Pnt(r),speed);
 
                 //Get the tte
                 Vct::Mod ttex,ttey;//Time to scape to x or y
-                ttex=tth_coordinate(c.get_pos_center().x,r.x,speed.x);
-                ttey=tth_coordinate(c.get_pos_center().y,r.y,speed.y);
+                ttex=tth_coordinate(ccopy.get_pos_center().x,r.x,speed.x);
+                ttey=tth_coordinate(ccopy.get_pos_center().y,r.y,speed.y);
 
                 if (ttex<0||ttey<0)
                     tte=std::max(ttex,ttey);
@@ -229,38 +229,38 @@ namespace fdx{ namespace arrow
                 if (px)
                 {
                     //Get the correct coordinates
-                    Vct::Coord r=s2.get_pos_corner().x,p=s2.get_pos_center().x;
+                    Vct::Coord r=r.get_pos_corner().x,p=r.get_pos_center().x;
                     if (px>0)
                     {
-                        r+=s2.get_diagonal().x;
-                        p-=s1.get_size();
+                        r+=r.get_diagonal().x;
+                        p-=ccopy.get_size();
                     }
                     else
                     {
-                        p+=s1.get_size();
+                        p+=ccopy.get_size();
                     }
 
                     tth=tth_coordinate(p,r,speed.x);
-                    tte=std::min(tth_coordinate(c.get_pos_center().y,s2.get_pos_corner().y,speed.y),tth_coordinate(c.get_pos_center().y,s2.get_pos_corner().y+s2.get_diagonal().y,speed.y));
+                    tte=std::min(tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y),tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y));
                 }
 
                 //Up or down
                 else
                 {
                     //Get the correct coordinates
-                    Vct::Coord r=s2.get_pos_corner().y,p=s2.get_pos_center().y;
+                    Vct::Coord r=r.get_pos_corner().y,p=r.get_pos_center().y;
                     if (py>0)
                     {
-                        r+=s2.get_diagonal().y;
-                        p-=s1.get_size();
+                        r+=r.get_diagonal().y;
+                        p-=ccopy.get_size();
                     }
                     else
                     {
-                        p+=s1.get_size();
+                        p+=ccopy.get_size();
                     }
 
                     tth=tth_coordinate(p,r,speed.y);
-                    tte=std::min(tth_coordinate(c.get_pos_center().x,s2.get_pos_corner().x,speed.x),tth_coordinate(c.get_pos_center().x,s2.get_pos_corner().x+s2.get_diagonal().x,speed.x));
+                    tte=std::min(tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x),tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x));
                 }
             }
 
@@ -275,7 +275,7 @@ namespace fdx{ namespace arrow
             {
                 //Progress to next update
                 t+=tte;
-                c.mov(speed*tte);
+                ccopy.mov(speed*tte);
 
                 if (speed.x>0&&px<1)px++;
                 else if (speed.x<0&&px>-1)px--;
@@ -378,6 +378,12 @@ namespace fdx{ namespace arrow
     Vct::Mod Crl::tth (const Pnt &p, const Vct &speed) const
     {
         return arrow::tth_crl_pnt(*this,p,speed);
+    }
+
+    //TTH a rectangle at a given speed
+    Vct::Mod Crl::tth (const Rct &p, const Vct &speed) const
+    {
+        return arrow::tth_crl_rct() (*this,p,speed);
     }
 
     /*Movement against a shape*/
