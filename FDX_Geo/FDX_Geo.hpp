@@ -360,6 +360,9 @@ namespace fdx { namespace arrow
             //Contact with a point
             bool contact (const Pnt &p) const;
 
+            //Contact with a rectangle
+            bool contact (const Rct &r) const;
+
         /* Time to hit */
 
         public:
@@ -373,6 +376,9 @@ namespace fdx { namespace arrow
             //TTH a point at a given speed
             Vct::Mod tth (const Pnt &p, const Vct &speed) const;
 
+            //TTH a rectangle at a given speed
+            Vct::Mod tth (const Rct &r, const Vct &speed) const;
+
         /* Movement against a shape */
 
         public:
@@ -385,6 +391,9 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             Vct mov_against (const Pnt &p, const Vct &speed) const;
+
+            //Movement against a rectangle at a given speed
+            Vct mov_against (const Rct &r, const Vct &speed) const;
     };
 
     //Point
