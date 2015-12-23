@@ -130,6 +130,7 @@ namespace fdx{ namespace arrow
         }
     }
 
+    //Time to hit of a rectangle to a circle at the given speed
     Vct::Mod tth_crl_rct (const Shp& s1, const Shp& s2, const Vct& speed)
     {
         //If they are alredy in contact, the TTH is 0
