@@ -1,0 +1,9 @@
+#Compiled files
+bin/
+obj/
+#C::B files
+*.depend
+*.layout
+#Object files
+*.a
+*.o
