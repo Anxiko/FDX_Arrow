@@ -381,9 +381,9 @@ namespace fdx{ namespace arrow
     }
 
     //TTH a rectangle at a given speed
-    Vct::Mod Crl::tth (const Rct &p, const Vct &speed) const
+    Vct::Mod Crl::tth (const Rct &r, const Vct &speed) const
     {
-        return arrow::tth_crl_rct() (*this,p,speed);
+        return arrow::tth_crl_rct(*this,r,speed);
     }
 
     /*Movement against a shape*/
