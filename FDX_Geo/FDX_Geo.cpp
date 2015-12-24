@@ -156,16 +156,9 @@ namespace fdx{ namespace arrow
         }
     }
 
-    //Time to hit of a rectangle to a circle at the given speed
-    Vct::Mod tth_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
+    //Relative position of this circle to the rectangle
+    void rel_pos_rct_crl (const Crl& c, const Rct& r, int &px, int &py)
     {
-        //If they are alredy in contact, the TTH is 0
-        if (c.contact(r))
-            return 0;
-
-        //Get the initial position of the Crl using the Rct as reference
-        int px,py;//Relative X and Y positions (-1,0,1)
-
         //X
         if (c.get_pos_center().x<r.get_pos_center().x)
             px=-1;//Left
@@ -187,6 +180,19 @@ namespace fdx{ namespace arrow
             else
                 py=1;//Down
         }
+    }
+
+    //Time to hit of a rectangle to a circle at the given speed
+    Vct::Mod tth_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
+    {
+        //If they are alredy in contact, the TTH is 0
+        if (c.contact(r))
+            return 0;
+
+        //Get the initial position of the Crl using the Rct as reference
+        int px,py;//Relative X and Y positions (-1,0,1)
+
+        rel_pos_rct_crl(c,r,px,py);
 
         //Iterate through the areas to get the next state
 
@@ -205,17 +211,17 @@ namespace fdx{ namespace arrow
             if (px&&py)
             {
                 //Get the corner of the rect
-                Vct r(r.get_pos_corner());
-                if (px>0)r.x+=r.get_diagonal().x;
-                if (py>0)r.y+=r.get_diagonal().y;
+                Vct corner(r.get_pos_corner());
+                if (px>0)corner.x+=r.get_diagonal().x;
+                if (py>0)corner.y+=r.get_diagonal().y;
 
                 //Get the tth
-                tth=ccopy.mov_against(Pnt(r),speed);
+                tth=ccopy.mov_against(Pnt(corner),speed);
 
                 //Get the tte
                 Vct::Mod ttex,ttey;//Time to scape to x or y
-                ttex=tth_coordinate(ccopy.get_pos_center().x,r.x,speed.x);
-                ttey=tth_coordinate(ccopy.get_pos_center().y,r.y,speed.y);
+                ttex=tth_coordinate(ccopy.get_pos_center().x,corner.x,speed.x);
+                ttey=tth_coordinate(ccopy.get_pos_center().y,corner.y,speed.y);
 
                 if (ttex<0||ttey<0)
                     tte=std::max(ttex,ttey);
@@ -332,6 +338,65 @@ namespace fdx{ namespace arrow
             return speed;
     }
 
+    //(Crl, Rct)
+    Vct mov_against_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
+    {
+        //Get the tth from this circle to the rectangle
+        Vct::Mod tth=c.tth(r,speed);
+
+        //Check if the TTH limits the movement
+        if (tth>=1||tth<0)//No limit
+            return speed;
+
+        //Speed is limited, process it
+        Vct speed_free(speed,tth);//Speed not limited by the tth
+        Crl ccopy(c);//Copy of the circle
+        ccopy.mov(rv);//Move the copy to the border
+
+        int px,py;//Relative positions of the circle
+        rel_pos_rct_crl(ccopy,r,px,py);
+
+        //Process the remaining speed
+        Vct speed_left(speed-speed_free);
+
+        //Check the type of contact
+        if (px&&py)//Corner contact
+        {
+            //Get the corner of the rect
+            Vct corner(r.get_pos_corner());
+            if (px>0)corner.x+=r.get_diagonal().x;
+            if (py>0)corner.y+=r.get_diagonal().y;
+
+            //Move the circle against the corner
+            speed_left=c.mov_against(Pnt(corner),speed_left);
+        }
+        else//Side contact or center contact
+        {
+            if (!(px||py))//Center of circle inside rectangle
+                speed_left=c.mov(Pnt(r.get_pos_center(),speed_left));//Move against the rectangle's center
+            else//Side contact
+            {
+                if (px)//X side
+                {
+                    if (px<0)//Circle at the left
+                        if (speed_left.x>0)speed_left.x=0;//Restrict movement to the right
+                    else//Circle at the right
+                        if (speed_left.x<0)speed_left.x=0;//Restrict movement to the left
+                }
+                else//Y side
+                {
+                    if (py<0)//Circle at the top
+                        if (speed_left.y>0)speed_left.y=0;//Restrict movement to bottom
+                    else//Circle at the bottom
+                        if (speed_left.y<0)speed_left.y=0;//Restrict movement to the top
+                }
+            }
+        }
+
+        //Return the not limited movement and the limited movement
+        return speed_free+speed_left;
+    }
+
     /* Crl */
 
     /*Contact*/
@@ -404,6 +469,12 @@ namespace fdx{ namespace arrow
     Vct Crl::mov_against (const Pnt &p, const Vct &speed) const
     {
         return arrow::mov_against_crl_pnt(*this,p,speed);
+    }
+
+    //Movement against a rectangle at a given speed
+    Vct Crl::mov_against (const Pnt &r, const Vct &speed) const
+    {
+        return arrow::mov_against_crl_rct(*this,r,speed);
     }
 
     /* Pnt */
