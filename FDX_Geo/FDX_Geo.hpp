@@ -65,6 +65,8 @@ namespace fdx { namespace arrow
 
     class Rct;//Rectangle shape
 
+    class Set;//Set of real values with two limits
+
     /*
         Function prototypes
     */
@@ -708,6 +710,151 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             Vct mov_against (const Pnt &p, const Vct &speed) const;
+    };
+
+    //Set of real values with two limits
+    class Set
+    {
+        /* Configuration */
+
+        /*Data types*/
+        public:
+
+            //Type of limits
+            typedef double Limit;
+
+            //Type of values
+            typedef double Value;
+
+        /*Constants*/
+        private:
+
+            static constexpr Limit DEF_MIN_LIMIT=0,DEF_MAX_LIMIT=0;//Default set
+            static constexpr Limit DEF_MIN_NULL=0,DEF_MAX_NULL=-1;//Default null set (holds no values)
+
+        /* Attributes */
+
+        /*Limits*/
+        private:
+
+            Limit min_limit, max_limit;
+
+        /* Limit members */
+
+        /*Validity*/
+        public:
+
+            //Check for validity of the set
+            bool valid()
+            {
+                return min_limit<=max_limit;
+            }
+
+            //Swap the limit
+            void swap_limits()
+            {
+                Limit temp=min_limit;
+                min_limit=max_limit;
+                max_limit=temp;
+            }
+
+        /*Set/get*/
+        public:
+
+            //Set limit
+
+            void set_min(Limit il)
+            {
+                min_limit=il;
+            }
+
+            void set_max(Limit il)
+            {
+                max_limit=il;
+            }
+
+            //Safe set (swaps limits if necessary)
+
+            void set_safe_min(Limit il)
+            {
+                set_min(il);
+                if (!valid())
+                    swap_limits();
+            }
+
+            void set_safe_max(Limit il)
+            {
+                set_max(il);
+                if (!valid())
+                    swap_limits();
+            }
+
+            //Get limits
+
+            Limit get_min()
+            {
+                return min_limit;
+            }
+
+            Limit get_max()
+            {
+                return max_limit;
+            }
+
+        /*Size*/
+        public:
+
+            //Get the size
+            Limit get_size()
+            {
+                return max_limit-min_limit;
+            }
+
+            //Get the center
+            Limit get_middle()
+            {
+                return (min_limit+max_limit)/2.0;
+            }
+
+        /* Constructors, copy control */
+
+        /*Constructors*/
+        public:
+
+            //Complete constructor
+            Set(Limit imin, Limit imax)
+            :min_limit(imin),max_limit(imax)
+            {}
+
+            //Default constructor
+            Set()
+            :Set(DEF_MIN_LIMIT,DEF_MAX_LIMIT)
+            {}
+
+            //Copy constructor
+            Set(const Set& s)
+            :Set(s.min_limit,s.max_limit)
+            {}
+
+        /*Operators*/
+        public:
+
+            //Assignment operator
+            Set& operator= (const Set& s)
+            {
+                min_limit=s.min_limit;
+                max_limit=s.max_limit;
+                return *this;
+            }
+
+            //Mulitply and assign operator
+            void operator*= (Limit m)
+            {
+                min_limit*=m;
+                max_limit*=m;
+                if (m<0)
+                    swap_limits();
+            }
     };
 
 }}//End of namespace
