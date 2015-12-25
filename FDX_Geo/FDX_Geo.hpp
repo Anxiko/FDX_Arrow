@@ -801,6 +801,15 @@ namespace fdx { namespace arrow
                 return max_limit;
             }
 
+        /*Values*/
+        public:
+
+            //Check if a value is in the set
+            bool check_value(Value v)
+            {
+                return(min_limit<=v&&v<=max_limit)
+            }
+
         /*Size*/
         public:
 
@@ -808,6 +817,12 @@ namespace fdx { namespace arrow
             Limit get_size()
             {
                 return max_limit-min_limit;
+            }
+
+            //Is elemental
+            bool elemental()
+            {
+                return min_limit==max_limit;
             }
 
             //Get the center
@@ -855,6 +870,41 @@ namespace fdx { namespace arrow
                 if (m<0)
                     swap_limits();
             }
+
+        /* Set methods */
+
+        /*Intersect*/
+        public:
+
+            //Return the intersection of two sets
+            static Set min_intersect(const Set& s1, const Set& s2)
+            {
+                return Set(std::max(s1.get_min(),s2.get_min()),std::min(s1.get_max(),s2.get_max()));
+            }
+
+            //Returns the big union of two sets (no gaps)
+            static Set max_union(const Set &s1, const Set& s2)
+            {
+                return Set(std::min(s1.get_min(),s2.get_min()),std::max(s1.get_max(),s2.get_max()));
+            }
+
+        /*TTH*/
+        public:
+
+            //TTH a point
+            Set tth(Value v, Value speed)
+            {
+                Set rv(v-get_min(),v-get_max());//Distance
+                rv*=(1.0/speed);//Get the distance to time dividing it by the speed
+                return rv;
+            }
+
+            //TTH a set
+            Set tth(const Set& s, Value speed)
+            {
+                return max_union(tth(s.get_min(),speed),tth(s.get_max()),speed);
+            }
+
     };
 
 }}//End of namespace
