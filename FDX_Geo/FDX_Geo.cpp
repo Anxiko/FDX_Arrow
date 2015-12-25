@@ -373,7 +373,7 @@ namespace fdx{ namespace arrow
         else//Side contact or center contact
         {
             if (!(px||py))//Center of circle inside rectangle
-                speed_left=c.mov(Pnt(r.get_pos_center(),speed_left));//Move against the rectangle's center
+                speed_left=c.mov(Crl(r.get_pos_center(),r.get_size()),speed_left));//Move against the rectangle's center
             else//Side contact
             {
                 if (px)//X side
