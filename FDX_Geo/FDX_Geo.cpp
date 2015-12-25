@@ -216,7 +216,7 @@ namespace fdx{ namespace arrow
                 if (py>0)corner.y+=r.get_diagonal().y;
 
                 //Get the tth
-                tth=ccopy.mov_against(Pnt(corner),speed);
+                tth=ccopy.tth(Pnt(corner),speed);
 
                 //Get the tte
                 Vct::Mod ttex,ttey;//Time to scape to x or y
@@ -350,8 +350,7 @@ namespace fdx{ namespace arrow
 
         //Speed is limited, process it
         Vct speed_free(speed,tth);//Speed not limited by the tth
-        Crl ccopy(s.get_pos_center(),s.get_size());//Copy of the circle
-        ccopy.mov(rv);//Move the copy to the border
+        Crl ccopy(s.get_pos_center()+speed_free,s.get_size());//Copy of the circle
 
         int px,py;//Relative positions of the circle
         rel_pos_rct_crl(ccopy,r,px,py);
@@ -489,13 +488,19 @@ namespace fdx{ namespace arrow
     //Contact with a circle
     bool Pnt::contact (const Crl &c) const
     {
-        return arrow::contact_crl_pnt(*this,c);
+        return arrow::contact_crlpnt_crlpnt(*this,c);
     }
 
     //Contact with a point
     bool Pnt::contact (const Pnt &p) const
     {
-        return arrow::contact_crl_pnt(*this,p);
+        return arrow::contact_crlpnt_crlpnt(*this,p);
+    }
+
+    //Contact with a rectangle
+    bool Pnt::contact (const Rct &r) const
+    {
+        return arrow::contact_crlpnt_rct(*this,r);
     }
 
     /*Time to hit*/
@@ -509,13 +514,19 @@ namespace fdx{ namespace arrow
     //TTH a circle at a given speed
     Vct::Mod Pnt::tth (const Crl &c, const Vct &speed) const
     {
-        return arrow::tth_crl_pnt(*this,c,speed);
+        return arrow::tth_crlpnt_crlpnt(*this,c,speed);
     }
 
     //TTH a point at a given speed
     Vct::Mod Pnt::tth (const Pnt &p, const Vct &speed) const
     {
-        return arrow::tth_crl_pnt(*this,p,speed);
+        return arrow::tth_crlpnt_crlpnt(*this,p,speed);
+    }
+
+    //TTH a rectangle at a given speed
+    Vct::Mod Pnt::tth (const Rct &r, const Vct &speed) const
+    {
+        return arrow::tth_crlpnt_rct(*this,r,speed);
     }
 
     /*Movement against a shape*/
@@ -529,13 +540,19 @@ namespace fdx{ namespace arrow
     //Movement against a circle at a given speed
     Vct Pnt::mov_against (const Crl &c, const Vct &speed) const
     {
-        return arrow::mov_against_crl_pnt(*this,c,speed);
+        return arrow::mov_against_crlpnt_crlpnt(*this,c,speed);
     }
 
     //Movement against a point at a given speed
     Vct Pnt::mov_against (const Pnt &p, const Vct &speed) const
     {
-        return arrow::mov_against_crl_pnt(*this,p,speed);
+        return arrow::mov_against_crlpnt_crlpnt(*this,p,speed);
+    }
+
+    //Movement against a rectangle at a given speed
+    Vct Pnt::mov_against (const Rct &r, const Vct &speed) const
+    {
+        return arrow::mov_against_crlpnt_rct(*this,r,speed);
     }
 
 }}//End of namespace
