@@ -491,13 +491,13 @@ namespace fdx { namespace arrow
         public:
 
             //Set the size of the circle that contains the shape completly
-            void set_size (Vct::Mod nsize)
+            void set_size (Vct::Mod)
             {
                 return;//This function does nothing on a point
             }
 
             //Set the size (diagonal) of the rectangle that contains the shape completly
-            void set_diagonal (const Vct &ndiag)
+            void set_diagonal (const Vct &)
             {
                 return;//This function does nothing on a point
             }
