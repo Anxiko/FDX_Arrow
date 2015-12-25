@@ -83,6 +83,20 @@ namespace fdx{ namespace arrow
         return mindist_crlpnt_rct(s,r).sq_mod()<=s.get_size()*s.get_size();
     }
 
+    //Contact between two rects
+    bool contact_rct_rct (const Rct &r1, const Rct &r2)
+    {
+        //Distance between the centers
+        Vct rdist(r1.get_pos_center()-r2.get_pos_center());
+
+        //Size of the two rectangles combined
+        Vct rsz(r1.get_diagonal()+r2.get_diagonal());
+        rsz*=(0.5f);//Get the half size, not the full size
+
+        //Check for contact (size is less than the distance)
+        return ((std::abs(rdist.x)<=rsz.x)&&(std::abs(rdist.y)<=rsz.y));
+    }
+
     /*TTH*/
 
     //Time from the first shape to hit the second at the given speed
