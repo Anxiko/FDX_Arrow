@@ -50,8 +50,8 @@ namespace fdx{ namespace arrow
 
     /*Contact*/
 
-    //Contact between two shapes (Crl, Pnt)
-    bool contact_crl_pnt (const Shp& s1, const Shp& s2)
+    //Contact between two shapes (Crl/Pnt, Crl/Pnt)
+    bool contact_crlpnt_crlpnt (const Shp& s1, const Shp& s2)
     {
         Vct::Mod dist=s1.get_size()+s2.get_size();//Size of the shapes (radius for Crl, 0 for Pnt)
         return ((s1.get_pos_center()-s2.get_pos_center()).sq_mod())<(dist*dist);//If the distance between centers is less than the size, the shapes are in contact
@@ -67,28 +67,28 @@ namespace fdx{ namespace arrow
             return min_set>0?min_set:-max_set;
     }
 
-    //Get the minimum distance between rectangle and a circle
-    Vct mindist_rct_crl(const Rct &r, const Crl &c)
+    //Get the minimum distance between rectangle and a circle/point
+    Vct mindist_crlpnt_rct(const Shp &s, const Rct &r)
     {
         //Get the distance between the shapes
-        Vct d(r.get_pos_corner()-c.get_pos_center());
+        Vct d(r.get_pos_corner()-s.get_pos_center());
 
         //Get the minium distance between vector between the shapes
         return Vct(arrow::min_abs_set(d.x,d.x+r.get_diagonal().x),arrow::min_abs_set(d.y,d.y+r.get_diagonal().y));
     }
 
     //Contact between a rectangle and a circle
-    bool contact_rct_crl (const Rct &r, const Crl &c)
+    bool contact_crlpnt_rct (const Shp &s, const Rct &r)
     {
-        return mindist_rct_crl(r,c).sq_mod()<=c.get_size()*c.get_size();
+        return mindist_crlpnt_rct(s,r).sq_mod()<=s.get_size()*s.get_size();
     }
 
     /*TTH*/
 
     //Time from the first shape to hit the second at the given speed
 
-    //(Crl, Pnt)
-    Vct::Mod tth_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed)
+    //(Crl/Pnt, Crl/Pnt)
+    Vct::Mod tth_crlpnt_crlpnt (const Shp& s1, const Shp& s2, const Vct& speed)
     {
         //If they are alredy in contact
         if (s1.contact(s2))
@@ -139,7 +139,7 @@ namespace fdx{ namespace arrow
         }
     }
 
-    //(Crl, Rct)
+    //(Crl/Pnt, Rct)
 
     //Time for first coordinate to hit the second at the given speed
     Vct::Mod tth_coordinate(Vct::Coord c1, Vct::Coord c2, Vct::Coord v)
@@ -156,8 +156,8 @@ namespace fdx{ namespace arrow
         }
     }
 
-    //Relative position of this circle to the rectangle
-    void rel_pos_rct_crl (const Crl& c, const Rct& r, int &px, int &py)
+    //Relative position of this circle/point to the rectangle
+    void rel_pos_crlpnt_rct (const Crl& c, const Rct& r, int &px, int &py)
     {
         //X
         if (c.get_pos_center().x<r.get_pos_center().x)
@@ -183,16 +183,16 @@ namespace fdx{ namespace arrow
     }
 
     //Time to hit of a rectangle to a circle at the given speed
-    Vct::Mod tth_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
+    Vct::Mod tth_crlpnt_rct (const Crl& s, const Rct& r, const Vct& speed)
     {
         //If they are alredy in contact, the TTH is 0
-        if (c.contact(r))
+        if (s.contact(r))
             return 0;
 
         //Get the initial position of the Crl using the Rct as reference
         int px,py;//Relative X and Y positions (-1,0,1)
 
-        rel_pos_rct_crl(c,r,px,py);
+        rel_pos_crlpnt_rct(s,r,px,py);
 
         //Iterate through the areas to get the next state
 
@@ -200,7 +200,7 @@ namespace fdx{ namespace arrow
         Vct::Mod tth,tte,t=0;
 
         //Make a copy of the circle
-        Crl ccopy(c);
+        Crl ccopy(s.get_pos_center(),s.get_size());
 
         //Loop through the areas
         while(true)
@@ -301,10 +301,10 @@ namespace fdx{ namespace arrow
     //Move the first shape against the other at the given speed
 
     //(Crl, Pnt)
-    Vct mov_against_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed)
+    Vct mov_against_crlpnt_crlpnt (const Shp& s1, const Shp& s2, const Vct& speed)
     {
         //Get the time to hit
-        Vct::Mod t=tth_crl_pnt(s1,s2,speed);
+        Vct::Mod t=tth_crlpnt_crlpnt(s1,s2,speed);
 
         //Check if the speed needs to be restricted
         //If it will hit in this tick
@@ -338,11 +338,11 @@ namespace fdx{ namespace arrow
             return speed;
     }
 
-    //(Crl, Rct)
-    Vct mov_against_crl_rct (const Crl& c, const Rct& r, const Vct& speed)
+    //(Crl/Pnt, Rct)
+    Vct mov_against_crlpnt_rct (const Shp& s, const Rct& r, const Vct& speed)
     {
         //Get the tth from this circle to the rectangle
-        Vct::Mod tth=c.tth(r,speed);
+        Vct::Mod tth=s.tth(r,speed);
 
         //Check if the TTH limits the movement
         if (tth>=1||tth<0)//No limit
@@ -350,7 +350,7 @@ namespace fdx{ namespace arrow
 
         //Speed is limited, process it
         Vct speed_free(speed,tth);//Speed not limited by the tth
-        Crl ccopy(c);//Copy of the circle
+        Crl ccopy(s.get_pos_center(),s.get_size());//Copy of the circle
         ccopy.mov(rv);//Move the copy to the border
 
         int px,py;//Relative positions of the circle
@@ -410,20 +410,19 @@ namespace fdx{ namespace arrow
     //Contact with a circle
     bool Crl::contact (const Crl &c) const
     {
-        return arrow::contact_crl_pnt(*this,c);
+        return arrow::contact_crlpnt_crlpnt(*this,c);
     }
 
     //Contact with a point
     bool Crl::contact (const Pnt &p) const
     {
-        return arrow::contact_crl_pnt(*this,p);
+        return arrow::contact_crlpnt_crlpnt(*this,p);
     }
 
     //Contact with a rectangle
     bool Crl::contact (const Rct &r) const
     {
-        return arrow::contact_rct_crl(r,*this);
-    }
+        return arrow::contact_crlpnt_rct(*this,r);
 
     /*Time to hit*/
 
@@ -436,19 +435,19 @@ namespace fdx{ namespace arrow
     //TTH a circle at a given speed
     Vct::Mod Crl::tth (const Crl &c, const Vct &speed) const
     {
-        return arrow::tth_crl_pnt(*this,c,speed);
+        return arrow::tth_crlpnt_crlpnt_pnt(*this,c,speed);
     }
 
     //TTH a point at a given speed
     Vct::Mod Crl::tth (const Pnt &p, const Vct &speed) const
     {
-        return arrow::tth_crl_pnt(*this,p,speed);
+        return arrow::tth_crlpnt_crlpnt_pnt(*this,p,speed);
     }
 
     //TTH a rectangle at a given speed
     Vct::Mod Crl::tth (const Rct &r, const Vct &speed) const
     {
-        return arrow::tth_crl_rct(*this,r,speed);
+        return arrow::tth_crlpnt_rct(*this,r,speed);
     }
 
     /*Movement against a shape*/
@@ -462,19 +461,19 @@ namespace fdx{ namespace arrow
     //Movement against a circle at a given speed
     Vct Crl::mov_against (const Crl &c, const Vct &speed) const
     {
-        return arrow::mov_against_crl_pnt(*this,c,speed);
+        return arrow::mov_against_crlpnt_crlpnt_pnt(*this,c,speed);
     }
 
     //Movement against a point at a given speed
     Vct Crl::mov_against (const Pnt &p, const Vct &speed) const
     {
-        return arrow::mov_against_crl_pnt(*this,p,speed);
+        return arrow::mov_against_crlpnt_crlpnt_pnt(*this,p,speed);
     }
 
     //Movement against a rectangle at a given speed
     Vct Crl::mov_against (const Pnt &r, const Vct &speed) const
     {
-        return arrow::mov_against_crl_rct(*this,r,speed);
+        return arrow::mov_against_crlpnt_crlpnt_rct(*this,r,speed);
     }
 
     /* Pnt */
