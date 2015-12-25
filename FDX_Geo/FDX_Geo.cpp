@@ -157,25 +157,25 @@ namespace fdx{ namespace arrow
     }
 
     //Relative position of this circle/point to the rectangle
-    void rel_pos_crlpnt_rct (const Crl& c, const Rct& r, int &px, int &py)
+    void rel_pos_crlpnt_rct (const Shp& s, const Rct& r, int &px, int &py)
     {
         //X
-        if (c.get_pos_center().x<r.get_pos_center().x)
+        if (s.get_pos_center().x<r.get_pos_center().x)
             px=-1;//Left
         else
         {
-            if (c.get_pos_center().x<=(r.get_pos_center().x+r.get_diagonal().x))
+            if (s.get_pos_center().x<=(r.get_pos_center().x+r.get_diagonal().x))
                 px=0;//Center
             else
                 px=1;//Right
         }
 
         //Y
-        if (c.get_pos_center().y<r.get_pos_center().y)
+        if (s.get_pos_center().y<r.get_pos_center().y)
             py=-1;//Up
         else
         {
-            if (c.get_pos_center().y<=(r.get_pos_center().y+r.get_diagonal().y))
+            if (s.get_pos_center().y<=(r.get_pos_center().y+r.get_diagonal().y))
                 py=0;//Center
             else
                 py=1;//Down
@@ -183,7 +183,7 @@ namespace fdx{ namespace arrow
     }
 
     //Time to hit of a rectangle to a circle at the given speed
-    Vct::Mod tth_crlpnt_rct (const Crl& s, const Rct& r, const Vct& speed)
+    Vct::Mod tth_crlpnt_rct (const Shp& s, const Rct& r, const Vct& speed)
     {
         //If they are alredy in contact, the TTH is 0
         if (s.contact(r))
@@ -235,18 +235,18 @@ namespace fdx{ namespace arrow
                 if (px)
                 {
                     //Get the correct coordinates
-                    Vct::Coord r=r.get_pos_corner().x,p=r.get_pos_center().x;
+                    Vct::Coord rct_side=r.get_pos_corner().x,crl_side=ccopy.get_pos_center().x;
                     if (px>0)
                     {
-                        r+=r.get_diagonal().x;
-                        p-=ccopy.get_size();
+                        rct_side+=r.get_diagonal().x;
+                        crl_side-=ccopy.get_size();
                     }
                     else
                     {
-                        p+=ccopy.get_size();
+                        crl_side+=ccopy.get_size();
                     }
 
-                    tth=tth_coordinate(p,r,speed.x);
+                    tth=tth_coordinate(crl_side,rct_side,speed.x);
                     tte=std::min(tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y),tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y));
                 }
 
@@ -254,18 +254,18 @@ namespace fdx{ namespace arrow
                 else
                 {
                     //Get the correct coordinates
-                    Vct::Coord r=r.get_pos_corner().y,p=r.get_pos_center().y;
+                    Vct::Coord rct_side=r.get_pos_corner().y,crl_side=ccopy.get_pos_center().y;
                     if (py>0)
                     {
-                        r+=r.get_diagonal().y;
-                        p-=ccopy.get_size();
+                        rct_side+=r.get_diagonal().y;
+                        crl_side-=ccopy.get_size();
                     }
                     else
                     {
-                        p+=ccopy.get_size();
+                        crl_side+=ccopy.get_size();
                     }
 
-                    tth=tth_coordinate(p,r,speed.y);
+                    tth=tth_coordinate(crl_side,rct_side,speed.y);
                     tte=std::min(tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x),tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x));
                 }
             }
