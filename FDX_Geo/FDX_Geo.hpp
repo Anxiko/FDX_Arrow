@@ -745,7 +745,7 @@ namespace fdx { namespace arrow
         public:
 
             //Check for validity of the set
-            bool valid()
+            bool valid() const
             {
                 return min_limit<=max_limit;
             }
@@ -791,12 +791,12 @@ namespace fdx { namespace arrow
 
             //Get limits
 
-            Limit get_min()
+            Limit get_min() const
             {
                 return min_limit;
             }
 
-            Limit get_max()
+            Limit get_max() const
             {
                 return max_limit;
             }
@@ -805,28 +805,28 @@ namespace fdx { namespace arrow
         public:
 
             //Check if a value is in the set
-            bool check_value(Value v)
+            bool check_value(Value v) const
             {
-                return(min_limit<=v&&v<=max_limit)
+                return(min_limit<=v&&v<=max_limit);
             }
 
         /*Size*/
         public:
 
             //Get the size
-            Limit get_size()
+            Limit get_size() const
             {
                 return max_limit-min_limit;
             }
 
             //Is elemental
-            bool elemental()
+            bool elemental() const
             {
                 return min_limit==max_limit;
             }
 
             //Get the center
-            Limit get_middle()
+            Limit get_middle() const
             {
                 return (min_limit+max_limit)/2.0;
             }
