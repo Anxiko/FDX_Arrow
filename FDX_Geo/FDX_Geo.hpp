@@ -902,9 +902,8 @@ namespace fdx { namespace arrow
             //TTH a set
             Set tth(const Set& s, Value speed) const
             {
-                return max_union(tth(s.get_min(),speed),tth(s.get_max()),speed);
+                return max_union(tth(s.get_min(),speed),tth(s.get_max(),speed));
             }
-
     };
 
 }}//End of namespace
