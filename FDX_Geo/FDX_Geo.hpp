@@ -71,27 +71,6 @@ namespace fdx { namespace arrow
         Function prototypes
     */
 
-    /* Shapes */
-
-    /*Contact*/
-
-    //Contact between two shapes (Crl, Pnt)
-    bool contact_crl_pnt (const Shp& s1, const Shp& s2);
-
-    /*TTH*/
-
-    //Time from the first shape to hit the second at the given speed
-
-    //(Crl, Pnt)
-    Vct::Mod tth_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed);
-
-    /*Move against a shape*/
-
-    //Move the first shape against the other at the given speed
-
-    //(Crl, Pnt)
-    Vct mov_against_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed);
-
     /*
         Data types
      */
@@ -646,7 +625,7 @@ namespace fdx { namespace arrow
             //Get the size of the circle that contains the shape completly
             Vct::Mod get_size () const
             {
-                return (0.5*s).mod();
+                return 0.5*s.mod();
             }
 
             //Get the size (diagonal) of the rectangle that contains the shape completly

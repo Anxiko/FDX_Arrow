@@ -384,13 +384,13 @@ namespace fdx{ namespace arrow
         Set r2y(r2.get_pos_corner().y,r2.get_pos_corner().y+r2.get_diagonal().y);//Y
 
         //Time of contact
-        Set ttc(Set.min_intersect(r1x.tth(r2x,speed.x),r1y.tth(r2y,speed.y)));//Intersection between X and Y TTCs
+        Set ttc(Set::min_intersect(r1x.tth(r2x,speed.x),r1y.tth(r2y,speed.y)));//Intersection between X and Y TTCs
 
         //Check for contact at the begining
         if (ttc.check_value(0))//If 0 is on the set, the contact starts at the begining
             return 0;
         else//If 0 is not on the set, return the tth (start of ttc) if it's at the left, or 1 if it's at the right
-            return ttc.get_min()<0?1:std::min(1,ttc.get_min());
+            return ttc.get_min()<0?1:std::min(1.0,ttc.get_min());
     }
 
     /*Move against a shape*/
@@ -450,7 +450,7 @@ namespace fdx{ namespace arrow
         Crl ccopy(s.get_pos_center()+speed_free,s.get_size());//Copy of the circle
 
         int px,py;//Relative positions of the circle
-        rel_pos_rct_crl(ccopy,r,px,py);
+        rel_pos_crlpnt_rct(ccopy,r,px,py);
 
         //Process the remaining speed
         Vct speed_left(speed-speed_free);
@@ -464,20 +464,26 @@ namespace fdx{ namespace arrow
             if (py>0)corner.y+=r.get_diagonal().y;
 
             //Move the circle against the corner
-            speed_left=c.mov_against(Pnt(corner),speed_left);
+            speed_left=ccopy.mov_against(Pnt(corner),speed_left);
         }
         else//Side contact or center contact
         {
             if (!(px||py))//Center of circle inside rectangle
-                speed_left=c.mov(Crl(r.get_pos_center(),r.get_size()),speed_left));//Move against the rectangle's center
+            {
+                speed_left=ccopy.mov_against(Crl(r.get_pos_center(),r.get_size()),speed_left);//Move against the rectangle's center
+            }
             else//Side contact
             {
                 if (px)//X side
                 {
                     if (px<0)//Circle at the left
+                    {
                         if (speed_left.x>0)speed_left.x=0;//Restrict movement to the right
+                    }
                     else//Circle at the right
+                    {
                         if (speed_left.x<0)speed_left.x=0;//Restrict movement to the left
+                    }
                 }
                 else//Y side
                 {
@@ -498,7 +504,7 @@ namespace fdx{ namespace arrow
     Vct mov_against_rct_rct (const Rct& r1, const Rct& r2, const Vct& speed)
     {
         //Get the tth from the first rectangle to the second
-        Vct::Mod tth=r1.tth(r,speed);
+        Vct::Mod tth=r1.tth(r2,speed);
 
         //Check if the TTH limits the movement
         if (tth>=1||tth<0)//No limit
