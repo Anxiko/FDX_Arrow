@@ -715,4 +715,83 @@ namespace fdx{ namespace arrow
         return arrow::mov_against_crlpnt_rct(*this,r,speed);
     }
 
+    /* Rct */
+
+    /*Contact*/
+
+    //Contact with a generic shape
+    bool Rct::contact (const Shp &s) const
+    {
+        return s.contact(*this);
+    }
+
+    //Contact with a circle
+    bool Rct::contact (const Crl &c) const
+    {
+        return arrow::contact_crlpnt_rct(c,*this);
+    }
+
+    //Contact with a point
+    bool Rct::contact (const Pnt &p) const
+    {
+        return arrow::contact_crlpnt_rct(p,*this);
+    }
+
+    //Contact with a rectangle
+    bool Rct::contact (const Rct &r) const
+    {
+        return arrow::contact_rct_rct(*this,r);
+
+    /*Time to hit*/
+
+    //TTH a generic shape at a given speed
+    Vct::Mod Rct::tth (const Shp &s, const Vct &speed) const
+    {
+        return s.tth(*this,-speed);
+    }
+
+    //TTH a circle at a given speed
+    Vct::Mod Rct::tth (const Crl &c, const Vct &speed) const
+    {
+        return arrow::tth_crlpnt_rct(c,*this,-speed);
+    }
+
+    //TTH a point at a given speed
+    Vct::Mod Rct::tth (const Pnt &p, const Vct &speed) const
+    {
+        return arrow::tth_crlpnt_rct(p,*this,-speed);
+    }
+
+    //TTH a rectangle at a given speed
+    Vct::Mod Rct::tth (const Rct &r, const Vct &speed) const
+    {
+        return arrow::tth_rct_rct(*this,r,speed);
+    }
+
+    /*Movement against a shape*/
+
+    //Movement against a generic shape at a given speed
+    Vct Rct::mov_against (const Shp &s, const Vct &speed) const
+    {
+        return -s.mov_against(*this,-speed);
+    }
+
+    //Movement against a circle at a given speed
+    Vct Rct::mov_against (const Crl &c, const Vct &speed) const
+    {
+        return -arrow::mov_against_crlpnt_rct(c,*this,-speed);
+    }
+
+    //Movement against a point at a given speed
+    Vct Rct::mov_against (const Pnt &p, const Vct &speed) const
+    {
+        return -arrow::mov_against_crlpnt_rct(p,r,-speed);
+    }
+
+    //Movement against a rectangle at a given speed
+    Vct Rct::mov_against (const Pnt &r, const Vct &speed) const
+    {
+        return arrow::mov_against_rct_rct(*this,r,speed);
+    }
+
 }}//End of namespace
