@@ -317,7 +317,7 @@ namespace fdx{ namespace arrow
     {
         //Get the data to process
         Vct d(r2.get_pos_center()-r1.get_pos_center());//Distance between centers
-        Vct s((r1.get_diagonal()+r2.get_diagonal())/2.0);//Size of the rectangles combined
+        Vct s((r1.get_diagonal()+r2.get_diagonal()),0.5);//Size of the rectangles combined
 
         //Process each side separetly
 
