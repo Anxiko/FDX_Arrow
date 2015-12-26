@@ -171,6 +171,7 @@ namespace fdx{ namespace arrow
     }
 
     //Relative position of this circle/point to the rectangle
+    //0=center, 1=non center; sign swaps for other side
     void rel_pos_crlpnt_rct (const Shp& s, const Rct& r, int &px, int &py)
     {
         //X
@@ -309,6 +310,88 @@ namespace fdx{ namespace arrow
         }
     }
 
+    //(Rct, Rct)
+    //Relative position of the first rectangle to the second
+    //0=center, 1=inside contact, 2=border contact, 3=no contact; sign swaps for other side
+    void rel_pos_rct_rct (const Rct& r1, const Rct& r2, int &px, int &py)
+    {
+        //Get the data to process
+        Vct d(r2.get_pos_center()-r1.get_pos_center());//Distance between centers
+        Vct s((r1.get_diagonal()+r2.get_diagonal())/2.0);//Size of the rectangles combined
+
+        //Process each side separetly
+
+        //X
+
+        //Check for centers aligned
+        if (d.x)//Non center
+        {
+            if (arrow::almost_equal(std::abs(d.x),s.x))//Border contact
+            {
+                px=2;
+            }
+            else//Inside or outside
+            {
+                //Check the type of contact
+                if (std::abs(d.x)<s.x)//Inside
+                    px=1;
+                else//Outside
+                    px=3;
+            }
+        }
+        else//Center
+            px=0;
+
+        //Adjust the sign
+        if (d.x<0)px=-px;
+
+        //Y
+
+        //Check for centers aligned
+        if (d.y)//Non center
+        {
+            if (arrow::almost_equal(std::abs(d.y),s.y))//Border contact
+            {
+                py=2;
+            }
+            else//Inside or outside
+            {
+                //Check the type of contact
+                if (std::abs(d.y)<s.y)//Inside
+                    py=1;
+                else//Outside
+                    py=3;
+            }
+        }
+        else//Center
+            py=0;
+
+        //Adjust the sign
+        if (d.y<0)py=-py;
+    }
+
+    //Time from the first rectangle to hit the second
+    Vct::Mod tth_rct_rct (const Rct &r1, const Rct &r2, const Vct& speed)
+    {
+        //Sides
+
+        //R1
+        Set r1x(r1.get_pos_corner().x,r1.get_pos_corner().x+r1.get_diagonal().x);//X
+        Set r1y(r1.get_pos_corner().y,r1.get_pos_corner().y+r1.get_diagonal().y);//Y
+
+        //R2
+        Set r2x(r2.get_pos_corner().x,r2.get_pos_corner().x+r2.get_diagonal().x);//X
+        Set r2y(r2.get_pos_corner().y,r2.get_pos_corner().y+r2.get_diagonal().y);//Y
+
+        //Time of contact
+        Set ttc(Set.min_intersect(r1x.tth(r2x,speed.x),r1y.tth(r2y,speed.y)));//Intersection between X and Y TTCs
+
+        //Check for contact at the begining
+        if (ttc.check_value(0))//If 0 is on the set, the contact starts at the begining
+            return 0;
+        else//If 0 is not on the set, return the tth (start of ttc) if it's at the left, or 1 if it's at the right
+            return ttc.get_min()<0?1:std::min(1,ttc.get_min());
+    }
 
     /*Move against a shape*/
 
@@ -407,6 +490,69 @@ namespace fdx{ namespace arrow
         }
 
         //Return the not limited movement and the limited movement
+        return speed_free+speed_left;
+    }
+
+
+    //(Rct, Rct)
+    Vct mov_against_rct_rct (const Rct& r1, const Rct& r2, const Vct& speed)
+    {
+        //Get the tth from the first rectangle to the second
+        Vct::Mod tth=r1.tth(r,speed);
+
+        //Check if the TTH limits the movement
+        if (tth>=1||tth<0)//No limit
+            return speed;
+
+        //Speed is limited, process it
+        Vct speed_free(speed,tth);//Speed not limited by the tth
+        Rct rcopy(r1);//Copy of the rectangle
+        rcopy.mov(speed_free);
+
+        //Get the relative position
+        int px,py;
+        rel_pos_rct_rct(rcopy,r2,px,py);
+
+        //Process the remaining speed
+        Vct speed_left(speed-speed_free);
+
+        //Check the type of contact
+
+        //Corner contact
+        if (std::abs(px)>=2&&std::abs(py)>=2)
+        {
+            //Check if the speed goes on the same direction as the corner (inside the Rct)
+            if (speed_left.x*px>0&&speed_left.y*py>0)//Only one component of the speed is to be kept (priority on X)
+            {
+                if (std::abs(speed_left.x)>=std::abs(speed_left.y))
+                    speed_left.y=0;//X is kept
+                else
+                    speed_left.x=0;//Y is kept
+            }
+            //Else, the speed does not need to be modified
+        }
+        else//Side contact or center contact
+        {
+            if (std::abs(px)>=2)//Border contact on left/right
+            {
+                if (speed_left.x*px>0)//If the speed goes towards the center, limit it
+                    speed_left.x=0;
+            }
+            else if (std::abs(py)>=2)//Border contact on top bottom
+            {
+                if (speed_left.y*py>0)//If the speed goes towards the center, limit it
+                    speed_left.y=0;
+            }
+            else//Inside contact
+            {
+                if (speed_left.x*px>0)//X limit
+                    speed_left.x=0;
+                if (speed_left.y*py>0)//Y limit
+                    speed_left.y=0;
+            }
+        }
+
+        //Return the speed
         return speed_free+speed_left;
     }
 
