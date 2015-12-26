@@ -488,9 +488,13 @@ namespace fdx{ namespace arrow
                 else//Y side
                 {
                     if (py<0)//Circle at the top
+                    {
                         if (speed_left.y>0)speed_left.y=0;//Restrict movement to bottom
+                    }
                     else//Circle at the bottom
+                    {
                         if (speed_left.y<0)speed_left.y=0;//Restrict movement to the top
+                    }
                 }
             }
         }
@@ -588,6 +592,7 @@ namespace fdx{ namespace arrow
     bool Crl::contact (const Rct &r) const
     {
         return arrow::contact_crlpnt_rct(*this,r);
+    }
 
     /*Time to hit*/
 
@@ -600,13 +605,13 @@ namespace fdx{ namespace arrow
     //TTH a circle at a given speed
     Vct::Mod Crl::tth (const Crl &c, const Vct &speed) const
     {
-        return arrow::tth_crlpnt_crlpnt_pnt(*this,c,speed);
+        return arrow::tth_crlpnt_crlpnt(*this,c,speed);
     }
 
     //TTH a point at a given speed
     Vct::Mod Crl::tth (const Pnt &p, const Vct &speed) const
     {
-        return arrow::tth_crlpnt_crlpnt_pnt(*this,p,speed);
+        return arrow::tth_crlpnt_crlpnt(*this,p,speed);
     }
 
     //TTH a rectangle at a given speed
@@ -626,19 +631,19 @@ namespace fdx{ namespace arrow
     //Movement against a circle at a given speed
     Vct Crl::mov_against (const Crl &c, const Vct &speed) const
     {
-        return arrow::mov_against_crlpnt_crlpnt_pnt(*this,c,speed);
+        return arrow::mov_against_crlpnt_crlpnt(*this,c,speed);
     }
 
     //Movement against a point at a given speed
     Vct Crl::mov_against (const Pnt &p, const Vct &speed) const
     {
-        return arrow::mov_against_crlpnt_crlpnt_pnt(*this,p,speed);
+        return arrow::mov_against_crlpnt_crlpnt(*this,p,speed);
     }
 
     //Movement against a rectangle at a given speed
-    Vct Crl::mov_against (const Pnt &r, const Vct &speed) const
+    Vct Crl::mov_against (const Rct &r, const Vct &speed) const
     {
-        return arrow::mov_against_crlpnt_crlpnt_rct(*this,r,speed);
+        return arrow::mov_against_crlpnt_rct(*this,r,speed);
     }
 
     /* Pnt */
@@ -747,6 +752,7 @@ namespace fdx{ namespace arrow
     bool Rct::contact (const Rct &r) const
     {
         return arrow::contact_rct_rct(*this,r);
+    }
 
     /*Time to hit*/
 
@@ -791,11 +797,11 @@ namespace fdx{ namespace arrow
     //Movement against a point at a given speed
     Vct Rct::mov_against (const Pnt &p, const Vct &speed) const
     {
-        return -arrow::mov_against_crlpnt_rct(p,r,-speed);
+        return -arrow::mov_against_crlpnt_rct(p,*this,-speed);
     }
 
     //Movement against a rectangle at a given speed
-    Vct Rct::mov_against (const Pnt &r, const Vct &speed) const
+    Vct Rct::mov_against (const Rct &r, const Vct &speed) const
     {
         return arrow::mov_against_rct_rct(*this,r,speed);
     }

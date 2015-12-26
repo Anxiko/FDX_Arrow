@@ -92,7 +92,7 @@ namespace fdx { namespace arrow
             Shp() = default;
 
             //Default copy constructor
-            Shp (const Shp &ns) = default;
+            Shp (const Shp&) = default;
 
         /*Copy control*/
 
@@ -570,7 +570,7 @@ namespace fdx { namespace arrow
             {}
 
             //Default copy constructor
-            Rct (const Rct &nr) = default;
+            Rct (const Rct&) = default;
 
         /*Copy control*/
 
