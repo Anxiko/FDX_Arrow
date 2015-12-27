@@ -262,7 +262,7 @@ namespace fdx{ namespace arrow
                     }
 
                     tth=tth_coordinate(crl_side,rct_side,speed.x);
-                    tte=std::min(tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y),tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y));
+                    tte=speed.y<0?tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y):tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y);
                 }
 
                 //Up or down
@@ -281,7 +281,7 @@ namespace fdx{ namespace arrow
                     }
 
                     tth=tth_coordinate(crl_side,rct_side,speed.y);
-                    tte=std::min(tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x),tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x));
+                    tte=speed.x<0?tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x):tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x);
                 }
             }
 
