@@ -235,8 +235,8 @@ namespace fdx{ namespace arrow
 
                 //Get the tte
                 Vct::Mod ttex,ttey;//Time to scape to x or y
-                ttex=tth_coordinate(ccopy.get_pos_center().x,corner.x,speed.x);
-                ttey=tth_coordinate(ccopy.get_pos_center().y,corner.y,speed.y);
+                ttex=speed.x*px<0?tth_coordinate(ccopy.get_pos_center().x,corner.x,speed.x):-1;
+                ttey=speed.y*py<0?tth_coordinate(ccopy.get_pos_center().y,corner.y,speed.y):-1;
 
                 if (ttex<0||ttey<0)
                     tte=std::max(ttex,ttey);
