@@ -175,22 +175,22 @@ namespace fdx{ namespace arrow
     void rel_pos_crlpnt_rct (const Shp& s, const Rct& r, int &px, int &py)
     {
         //X
-        if (s.get_pos_center().x<r.get_pos_center().x)
+        if (s.get_pos_center().x<r.get_pos_corner().x)
             px=-1;//Left
         else
         {
-            if (s.get_pos_center().x<=(r.get_pos_center().x+r.get_diagonal().x))
+            if (s.get_pos_center().x<=(r.get_pos_corner().x+r.get_diagonal().x))
                 px=0;//Center
             else
                 px=1;//Right
         }
 
         //Y
-        if (s.get_pos_center().y<r.get_pos_center().y)
+        if (s.get_pos_center().y<r.get_pos_corner().y)
             py=-1;//Up
         else
         {
-            if (s.get_pos_center().y<=(r.get_pos_center().y+r.get_diagonal().y))
+            if (s.get_pos_center().y<=(r.get_pos_corner().y+r.get_diagonal().y))
                 py=0;//Center
             else
                 py=1;//Down
