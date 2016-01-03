@@ -813,8 +813,20 @@ namespace fdx{ namespace arrow
     //TTH a point
     Set Set::tth(Value v, Value speed) const
     {
-        Set rv(v-get_min(),v-get_max());//Distance
-        rv*=(1.0/speed);//Get the distance to time dividing it by the speed
+        //Check for static or dynamic tth
+        if (speed)//Dynamic tth
+        {
+            Set rv(v-get_min(),v-get_max());//Distance
+            rv*=(1.0/speed);//Get the distance to time dividing it by the speed
+        }
+        else//Static tth
+        {
+            //Check if the value is inside the set
+            if (check_value(v))
+                return Set(DEF_MIN_LIMIT,DEF_MAX_LIMIT);//Default values hold the appropiate time value for infinite
+            else
+                return Set(DEF_MIN_NULL,DEF_MAX_NULL);//Null value indicates that there's no time value that puts the set in contact with it
+        }
         return rv;
     }
 
