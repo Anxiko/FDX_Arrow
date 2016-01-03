@@ -891,18 +891,10 @@ namespace fdx { namespace arrow
         public:
 
             //TTH a point
-            Set tth(Value v, Value speed) const
-            {
-                Set rv(v-get_min(),v-get_max());//Distance
-                rv*=(1.0/speed);//Get the distance to time dividing it by the speed
-                return rv;
-            }
+            Set tth(Value v, Value speed) const;
 
             //TTH a set
-            Set tth(const Set& s, Value speed) const
-            {
-                return max_union(tth(s.get_min(),speed),tth(s.get_max(),speed));
-            }
+            Set tth(const Set& s, Value speed) const;
     };
 
 }}//End of namespace

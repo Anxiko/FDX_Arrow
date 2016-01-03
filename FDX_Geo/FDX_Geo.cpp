@@ -806,4 +806,22 @@ namespace fdx{ namespace arrow
         return arrow::mov_against_rct_rct(*this,r,speed);
     }
 
+    /* Set */
+
+    /*TTH*/
+
+    //TTH a point
+    Set Set::tth(Value v, Value speed) const
+    {
+        Set rv(v-get_min(),v-get_max());//Distance
+        rv*=(1.0/speed);//Get the distance to time dividing it by the speed
+        return rv;
+    }
+
+    //TTH a set
+    Set Set::tth(const Set& s, Value speed) const
+    {
+        return max_union(tth(s.get_min(),speed),tth(s.get_max(),speed));
+    }
+
 }}//End of namespace
