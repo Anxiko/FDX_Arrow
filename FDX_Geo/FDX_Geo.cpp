@@ -816,8 +816,9 @@ namespace fdx{ namespace arrow
         //Check for static or dynamic tth
         if (speed)//Dynamic tth
         {
-            Set rv(v-get_min(),v-get_max());//Distance
+            Set rv(v-get_max(),v-get_min());//Distance
             rv*=(1.0/speed);//Get the distance to time dividing it by the speed
+            return rv;
         }
         else//Static tth
         {
@@ -827,7 +828,6 @@ namespace fdx{ namespace arrow
             else
                 return Set(DEF_MIN_NULL,DEF_MAX_NULL);//Null value indicates that there's no time value that puts the set in contact with it
         }
-        return rv;
     }
 
     //TTH a set
