@@ -65,30 +65,11 @@ namespace fdx { namespace arrow
 
     class Rct;//Rectangle shape
 
+    class Set;//Set of real values with two limits
+
     /*
         Function prototypes
     */
-
-    /* Shapes */
-
-    /*Contact*/
-
-    //Contact between two shapes (Crl, Pnt)
-    bool contact_crl_pnt (const Shp& s1, const Shp& s2);
-
-    /*TTH*/
-
-    //Time from the first shape to hit the second at the given speed
-
-    //(Crl, Pnt)
-    Vct::Mod tth_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed);
-
-    /*Move against a shape*/
-
-    //Move the first shape against the other at the given speed
-
-    //(Crl, Pnt)
-    Vct mov_against_crl_pnt (const Shp& s1, const Shp& s2, const Vct& speed);
 
     /*
         Data types
@@ -111,7 +92,7 @@ namespace fdx { namespace arrow
             Shp() = default;
 
             //Default copy constructor
-            Shp (const Shp &ns) = default;
+            Shp (const Shp&) = default;
 
         /*Copy control*/
 
@@ -189,6 +170,9 @@ namespace fdx { namespace arrow
             //Contact with a point
             virtual bool contact (const Pnt &p) const = 0;
 
+            //Contact with a rectangle
+            virtual bool contact (const Rct &r) const = 0;
+
         /* Time to hit */
 
         public:
@@ -202,6 +186,9 @@ namespace fdx { namespace arrow
             //TTH a point at a given speed
             virtual Vct::Mod tth (const Pnt &p, const Vct &speed) const = 0;
 
+            //TTH a rectangle at a given speed
+            virtual Vct::Mod tth (const Rct &r, const Vct &speed) const = 0;
+
         /* Movement against a shape */
 
         public:
@@ -214,6 +201,9 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             virtual Vct mov_against (const Pnt &p, const Vct &speed) const = 0;
+
+            //Movement against a rectangle at a given speed
+            virtual Vct mov_against (const Rct &r, const Vct &speed) const = 0;
     };
 
     //Circle
@@ -351,6 +341,9 @@ namespace fdx { namespace arrow
             //Contact with a point
             bool contact (const Pnt &p) const;
 
+            //Contact with a rectangle
+            bool contact (const Rct &r) const;
+
         /* Time to hit */
 
         public:
@@ -364,6 +357,9 @@ namespace fdx { namespace arrow
             //TTH a point at a given speed
             Vct::Mod tth (const Pnt &p, const Vct &speed) const;
 
+            //TTH a rectangle at a given speed
+            Vct::Mod tth (const Rct &r, const Vct &speed) const;
+
         /* Movement against a shape */
 
         public:
@@ -376,6 +372,9 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             Vct mov_against (const Pnt &p, const Vct &speed) const;
+
+            //Movement against a rectangle at a given speed
+            Vct mov_against (const Rct &r, const Vct &speed) const;
     };
 
     //Point
@@ -473,13 +472,13 @@ namespace fdx { namespace arrow
         public:
 
             //Set the size of the circle that contains the shape completly
-            void set_size (Vct::Mod nsize)
+            void set_size (Vct::Mod)
             {
                 return;//This function does nothing on a point
             }
 
             //Set the size (diagonal) of the rectangle that contains the shape completly
-            void set_diagonal (const Vct &ndiag)
+            void set_diagonal (const Vct &)
             {
                 return;//This function does nothing on a point
             }
@@ -507,6 +506,9 @@ namespace fdx { namespace arrow
             //Contact with a point
             bool contact (const Pnt &p) const;
 
+            //Contact with a rectangle
+            bool contact (const Rct &r) const;
+
         /* Time to hit */
 
         public:
@@ -520,6 +522,9 @@ namespace fdx { namespace arrow
             //TTH a point at a given speed
             Vct::Mod tth (const Pnt &p, const Vct &speed) const;
 
+            //TTH a rectangle at a given speed
+            Vct::Mod tth (const Rct &r, const Vct &speed) const;
+
         /* Movement against a shape */
 
         public:
@@ -532,6 +537,9 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             Vct mov_against (const Pnt &p, const Vct &speed) const;
+
+            //Movement against a rectangle at a given speed
+            Vct mov_against (const Rct &r, const Vct &speed) const;
     };
 
     //Rectangle
@@ -562,7 +570,7 @@ namespace fdx { namespace arrow
             {}
 
             //Default copy constructor
-            Rct (const Rct &nr) = default;
+            Rct (const Rct&) = default;
 
         /*Copy control*/
 
@@ -617,7 +625,7 @@ namespace fdx { namespace arrow
             //Get the size of the circle that contains the shape completly
             Vct::Mod get_size () const
             {
-                return (0.5*s).mod();
+                return 0.5*s.mod();
             }
 
             //Get the size (diagonal) of the rectangle that contains the shape completly
@@ -665,6 +673,10 @@ namespace fdx { namespace arrow
             //Contact with a point
             bool contact (const Pnt &p) const;
 
+            //Contact with a rectangle
+            bool contact (const Rct &r) const;
+
+
         /* Time to hit */
 
         public:
@@ -678,6 +690,9 @@ namespace fdx { namespace arrow
             //TTH a point at a given speed
             Vct::Mod tth (const Pnt &p, const Vct &speed) const;
 
+            //TTH a point at a given speed
+            Vct::Mod tth (const Rct &r, const Vct &speed) const;
+
         /* Movement against a shape */
 
         public:
@@ -690,6 +705,196 @@ namespace fdx { namespace arrow
 
             //Movement against a point at a given speed
             Vct mov_against (const Pnt &p, const Vct &speed) const;
+
+            //Movement against a point at a given speed
+            Vct mov_against (const Rct &r, const Vct &speed) const;
+
+    };
+
+    //Set of real values with two limits
+    class Set
+    {
+        /* Configuration */
+
+        /*Data types*/
+        public:
+
+            //Type of limits
+            typedef double Limit;
+
+            //Type of values
+            typedef double Value;
+
+        /*Constants*/
+        private:
+
+            static constexpr Limit DEF_MIN_LIMIT=0,DEF_MAX_LIMIT=0;//Default set
+            static constexpr Limit DEF_MIN_NULL=0,DEF_MAX_NULL=-1;//Default null set (holds no values)
+
+        /* Attributes */
+
+        /*Limits*/
+        private:
+
+            Limit min_limit, max_limit;
+
+        /* Limit members */
+
+        /*Validity*/
+        public:
+
+            //Check for validity of the set
+            bool valid() const
+            {
+                return min_limit<=max_limit;
+            }
+
+            //Swap the limit
+            void swap_limits()
+            {
+                Limit temp=min_limit;
+                min_limit=max_limit;
+                max_limit=temp;
+            }
+
+        /*Set/get*/
+        public:
+
+            //Set limit
+
+            void set_min(Limit il)
+            {
+                min_limit=il;
+            }
+
+            void set_max(Limit il)
+            {
+                max_limit=il;
+            }
+
+            //Safe set (swaps limits if necessary)
+
+            void set_safe_min(Limit il)
+            {
+                set_min(il);
+                if (!valid())
+                    swap_limits();
+            }
+
+            void set_safe_max(Limit il)
+            {
+                set_max(il);
+                if (!valid())
+                    swap_limits();
+            }
+
+            //Get limits
+
+            Limit get_min() const
+            {
+                return min_limit;
+            }
+
+            Limit get_max() const
+            {
+                return max_limit;
+            }
+
+        /*Values*/
+        public:
+
+            //Check if a value is in the set
+            bool check_value(Value v) const
+            {
+                return(min_limit<=v&&v<=max_limit);
+            }
+
+        /*Size*/
+        public:
+
+            //Get the size
+            Limit get_size() const
+            {
+                return max_limit-min_limit;
+            }
+
+            //Is elemental
+            bool elemental() const
+            {
+                return min_limit==max_limit;
+            }
+
+            //Get the center
+            Limit get_middle() const
+            {
+                return (min_limit+max_limit)/2.0;
+            }
+
+        /* Constructors, copy control */
+
+        /*Constructors*/
+        public:
+
+            //Complete constructor
+            Set(Limit imin, Limit imax)
+            :min_limit(imin),max_limit(imax)
+            {}
+
+            //Default constructor
+            Set()
+            :Set(DEF_MIN_LIMIT,DEF_MAX_LIMIT)
+            {}
+
+            //Copy constructor
+            Set(const Set& s)
+            :Set(s.min_limit,s.max_limit)
+            {}
+
+        /*Operators*/
+        public:
+
+            //Assignment operator
+            Set& operator= (const Set& s)
+            {
+                min_limit=s.min_limit;
+                max_limit=s.max_limit;
+                return *this;
+            }
+
+            //Mulitply and assign operator
+            void operator*= (Limit m)
+            {
+                min_limit*=m;
+                max_limit*=m;
+                if (m<0)
+                    swap_limits();
+            }
+
+        /* Set methods */
+
+        /*Intersect*/
+        public:
+
+            //Return the intersection of two sets
+            static Set min_intersect(const Set& s1, const Set& s2)
+            {
+                return Set(std::max(s1.get_min(),s2.get_min()),std::min(s1.get_max(),s2.get_max()));
+            }
+
+            //Returns the big union of two sets (no gaps)
+            static Set max_union(const Set &s1, const Set& s2)
+            {
+                return Set(std::min(s1.get_min(),s2.get_min()),std::max(s1.get_max(),s2.get_max()));
+            }
+
+        /*TTH*/
+        public:
+
+            //TTH a point
+            Set tth(Value v, Value speed) const;
+
+            //TTH a set
+            Set tth(const Set& s, Value speed) const;
     };
 
 }}//End of namespace
