@@ -204,6 +204,10 @@ namespace fdx{ namespace arrow
         if (s.contact(r))
             return 0;
 
+        //If there's no speed and no contact, there will never be contact
+        if (!speed)
+            return -1;
+
         //Get the initial position of the Crl using the Rct as reference
         int px,py;//Relative X and Y positions (-1,0,1)
 
@@ -262,7 +266,10 @@ namespace fdx{ namespace arrow
                     }
 
                     tth=tth_coordinate(crl_side,rct_side,speed.x);
-                    tte=speed.y<0?tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y):tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y);
+                    if (speed.y)
+                        tte=speed.y<0?tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y,speed.y):tth_coordinate(ccopy.get_pos_center().y,r.get_pos_corner().y+r.get_diagonal().y,speed.y);
+                    else
+                        tte=-1;
                 }
 
                 //Up or down
@@ -281,7 +288,10 @@ namespace fdx{ namespace arrow
                     }
 
                     tth=tth_coordinate(crl_side,rct_side,speed.y);
-                    tte=speed.x<0?tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x):tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x);
+                    if (speed.x)
+                        tte=speed.x<0?tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x,speed.x):tth_coordinate(ccopy.get_pos_center().x,r.get_pos_corner().x+r.get_diagonal().x,speed.x);
+                    else
+                        tte=-1;
                 }
             }
 
