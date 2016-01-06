@@ -99,7 +99,7 @@ namespace fdx { namespace arrow
         protected:
 
             //Default copy constructor
-            Shp& operator= (const Shp &ns) = default;
+            Shp& operator= (const Shp &) = default;
 
         public:
 
@@ -238,14 +238,14 @@ namespace fdx { namespace arrow
             {}
 
             //Default copy constructor
-            Crl (const Crl &nc) = default;
+            Crl (const Crl &) = default;
 
         /*Copy control*/
 
         public:
 
             //Default copy operator
-            Crl& operator= (const Crl &nc) = default;
+            Crl& operator= (const Crl &) = default;
 
             //Destructor
             virtual ~Crl() {}
@@ -403,14 +403,14 @@ namespace fdx { namespace arrow
             {}
 
             //Default copy constructor
-            Pnt (const Pnt &np) = default;
+            Pnt (const Pnt &) = default;
 
         /*Copy control*/
 
         public:
 
             //Default copy operator
-            Pnt& operator= (const Pnt &np) = default;
+            Pnt& operator= (const Pnt &) = default;
 
             //Destructor
             virtual ~Pnt() {}
@@ -577,7 +577,7 @@ namespace fdx { namespace arrow
         public:
 
             //Default copy constructor
-            Rct& operator= (const Rct &nr) = default;
+            Rct& operator= (const Rct &) = default;
 
             //Destructor
             virtual ~Rct() {}
