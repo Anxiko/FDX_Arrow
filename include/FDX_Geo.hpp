@@ -1,7 +1,7 @@
 /*
  * FDX_Geo.hpp
  *
- * Copyright 2015 Joaquín Monteagudo Gómez <kindos7@gmail.com>
+ * Copyright 2015 Joaquï¿½n Monteagudo Gï¿½mez <kindos7@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 /* Includes */
 
 //2D vectors
-#include "../FDX_Vct/FDX_Vct.hpp"
+#include "FDX_Vct.hpp"
 
 /* Defines */
 

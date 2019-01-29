@@ -38,7 +38,7 @@
 /* Includes */
 
 //Header file
-#include "FDX_Geo.hpp"
+#include "../include/FDX_Geo.hpp"
 
 namespace fdx{ namespace arrow
 {

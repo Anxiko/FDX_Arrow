@@ -1,7 +1,7 @@
 /*
  * FDX_Vct.cpp
  *
- * Copyright 2015 Joaquín Monteagudo Gómez <kindos7@gmail.com>
+ * Copyright 2015 Joaquï¿½n Monteagudo Gï¿½mez <kindos7@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 */
 
 /*
-    Version Nº 1.0 (dd/mm/yy, 06/01/2015 -> 13/01/2015)
+    Version Nï¿½ 1.0 (dd/mm/yy, 06/01/2015 -> 13/01/2015)
 */
 
 /*
@@ -38,7 +38,7 @@
 /* Includes */
 
 //Header file
-#include "FDX_Vct.hpp"
+#include "../include/FDX_Vct.hpp"
 
 namespace fdx{ namespace arrow
 {
