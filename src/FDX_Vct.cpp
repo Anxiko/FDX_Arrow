@@ -71,7 +71,7 @@ namespace fdx{ namespace arrow
     //Equality operator: same X and Y coordinates
     bool operator==(const Vct &a, const Vct &b)
     {
-        return (almost_equal(a.x,b.x)&&almost_equal(a.x,b.x));
+        return (almost_equal(a.x,b.x)&&almost_equal(a.y,b.y));
     }
 
     //Inequality operator: opposite of equality
